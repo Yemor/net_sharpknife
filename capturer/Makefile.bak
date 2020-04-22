@@ -1,0 +1,41 @@
+CC = gcc
+CXX = g++
+INCLUDES = -I./inlcude
+CXXFLAGS = -fPIC
+LIBS = -L./so -lpcap
+SODIR = ./so/
+
+OBJS = net_interface.o capture_api.o capturer.o
+FILENAME = net_interface capture_api capturer
+
+SHARPKNIFE_COMMON = $(SODIR)sharpknife_common.o
+
+Main: makedir $(SHARPKNIFE_COMMON) net_interface package
+
+makedir:
+	-@mkdir -p so
+
+$(SHARPKNIFE_COMMON):
+	@g++ -c ../sharpknife_common.cpp $(CXXFLAGS) -o $(SODIR)sharpknife_common.o
+
+
+net_interface:
+	@for file in $(FILENAME);\
+	do \
+		g++ -c $$file.cpp $(CXXFLAGS) -o $(SODIR)$$file.o;\
+		echo $$file.o;\
+	done
+
+package: makedir net_interface
+	g++ ./so/*.o $(CXXFLAGS) -shared -o $(SODIR)libcapturer.so -lpcap
+	cp $(SODIR)libcapturer.so ../so/
+
+clean :
+	-rm -rf ./so/*.o ./so/*.so
+
+
+# capturer : capturer.cpp
+# 	g++ -c capturer.cpp
+
+# rm :
+# 	rm -rf capturer.o
