@@ -1,4 +1,5 @@
 #include "sharpknife_common.h"
+#include "json11.hpp"
 
 void set_string(std::string &key, char *value)
 {
@@ -17,3 +18,8 @@ char conv_hex(unsigned int d)
     }
     else return '#';
 }
+
+// void read_json(FILE *)
+// {
+//     json11::JsonParse()
+// }

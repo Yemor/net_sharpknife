@@ -4,12 +4,20 @@
 
 #include "sharpknife_common.h"
 #include "./capturer/capturer.h"
+#include "dbconnect/dbconnect_api.h"
+#include <iostream>
 
 int main()
 {
-    Debug("Start Program.");
-    // run("a");
+    std::string dev_name;
+    SN_Debug("Start Program.");
     run();
-    Debug("Finish Program.");
+    printf("Please input the dev you wanna:");
+    std::cin>>dev_name;
+    //创建数据库连接
+    // up_init();
+    run(dev_name);
+    SN_Debug("Finish Program.");
+
     return 0;
 }
