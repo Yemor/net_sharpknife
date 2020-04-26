@@ -106,3 +106,5 @@ fabric.properties
 *.app
 main
 
+# usrpwdfile
+database_info.json

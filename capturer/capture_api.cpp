@@ -53,6 +53,17 @@ void recall_db(std::string bytes)
 }
 
 /**
+ * @brief 回调解析器
+ * 
+ * @param bytes 数据二进制文本内容
+ */
+void recall_analyzer(std::string bytes)
+{
+
+}
+
+
+/**
  * @brief 抓包回调
  * 
  * 
@@ -78,6 +89,7 @@ void deliver_packet(u_char *user, const struct pcap_pkthdr *h, const u_char *byt
     }
     SN_Debug("\n");
     recall_db(std::string(total_vec.begin(), total_vec.end()));
+    recall_analyzer(std::string(total_vec.begin(), total_vec.end()));
     return;
 }
 

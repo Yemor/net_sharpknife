@@ -16,6 +16,8 @@ void show_alldevs(std::vector<NetInterface> &alldevs_vec);
 
 void recall_db(std::string bytes);
 
+void recall_analyzer(std::string bytes);
+
 void deliver_packet(u_char *user, const struct pcap_pkthdr *h, const u_char *bytes);
 
 int interface_live(int snaplen, int promisc, int timeout, std::string device_name, char *errbuf);
