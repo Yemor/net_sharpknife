@@ -3,6 +3,7 @@
 #include "analyzer.h"
 #include "protocol/eth/eth.h"
 #include "protocol/ipv4/ipv4.h"
+#include "protocol/tcp/tcp.h"
 /**
  * analyzer根据TCP/IP网络模型来划分网络层次，每层必须将本身组成一条完整的信息再给到下一层
  * 每个协议有自己的文件夹和自己的解析规则与类型
@@ -54,6 +55,12 @@ void Analyzer_Manager::DeliverStream(std::string data)
         case ANALYZER_IPV6:
             /* code */
             break;
+        case ANALYZER_TCP:
+            static analyzer::tcp::TCP_Analyzer tcp;
+            tcp.DeliverPacket(std::string(data.begin()+precnt, data.end()), analyzer_data, status, cnt);
+            precnt += cnt;
+            cnt = 0;
+            break;
 
         default:
             SN_Debug("%u ", status);
@@ -63,6 +70,10 @@ void Analyzer_Manager::DeliverStream(std::string data)
     }
     // eth.DeliverPacket(data, analyzer_data, status);
     SN_Debug("in Analyzer_Manager, get analyzer_data = %s ", json11::Json(analyzer_data).dump().c_str());
+    if(status == ANALYZER_FINISH)
+    {
+        //DB_RECALL
+    }
 }
 
 } // namespace analyzer_manager

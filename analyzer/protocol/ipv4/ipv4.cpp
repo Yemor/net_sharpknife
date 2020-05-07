@@ -10,9 +10,8 @@ IPV4_Analyzer::~IPV4_Analyzer() {}
 void IPV4_Analyzer::DeliverPacket(std::string data, json11::Json::array &analyzer_data,
                                   analyzer_manager::analyzer_status &status, int &cnt)
 {
-    
-    std::string src_mac = analyzer_data[0]["src_mac"].string_value();
-    std::string dst_mac = analyzer_data[0]["dst_mac"].string_value();
+    std::string src_mac = analyzer_data[0]["源MAC地址"].string_value();
+    std::string dst_mac = analyzer_data[0]["目的MAC地址"].string_value();
     data = this->fragment[src_mac][dst_mac] + data;
     SN_Debug("ipv4 in eth_analyzer");
     SN_Debug("in IPV4_Analyzer, get data, data_length = %lu", data.length());
@@ -61,26 +60,28 @@ void IPV4_Analyzer::DeliverPacket(std::string data, json11::Json::array &analyze
         {
             // dont_fragment 和 more_fragment之间必定有一个为1
             status = analyzer_manager::ANALYZER_FAIL;
+                this->fragment[src_mac][dst_mac] = "";
             return ;
         }
         if (tot_len > data.length())
         {
             if (more_fragment)
             {
-                std::string src_mac = analyzer_data[0]["src_mac"].string_value();
-                std::string dst_mac = analyzer_data[0]["dst_mac"].string_value();
                 status = analyzer_manager::ANALYZER_WAIT;
                 this->fragment[src_mac][dst_mac] += data;
             }
             else
             {
                 status = analyzer_manager::ANALYZER_FAIL;
+                this->fragment[src_mac][dst_mac] = "";
             }
             return;
         }
         else if ((!dont_fragment) || more_fragment)
         {
             status = analyzer_manager::ANALYZER_FAIL;
+                this->fragment[src_mac][dst_mac] = "";
+
             return;
         }
         SN_Debug("reserved_bit = %s, dont_fragment = %s", reserved_bit ? "true" : "false", dont_fragment ? "true" : "false");
@@ -128,28 +129,28 @@ void IPV4_Analyzer::DeliverPacket(std::string data, json11::Json::array &analyze
             protocol_name = "unknow";
             break;
         }
-        json11::Json::array ipv4_data;
-        ipv4_data.push_back(json11::Json::object{{"协议", "ipv4"}});
-        ipv4_data.push_back(json11::Json::object{{"ipv4版本", ver}});
-        ipv4_data.push_back(json11::Json::object{{"ipv4头部长度", header_len}});
-        ipv4_data.push_back(json11::Json::object{{"服务类型", tos}});
-        ipv4_data.push_back(json11::Json::object{{"IP优先级", ip_precedence}});
-        ipv4_data.push_back(json11::Json::object{{"数据报总长度", tot_len}});
-        ipv4_data.push_back(json11::Json::object{{"是否不分片", dont_fragment}});
-        ipv4_data.push_back(json11::Json::object{{"后序分片", more_fragment}});
-        ipv4_data.push_back(json11::Json::object{{"分片偏移", fragment_offset}});
-        ipv4_data.push_back(json11::Json::object{{"存活时间", ttl}});
-        ipv4_data.push_back(json11::Json::object{{"下一协议", protocol_name}});
-        ipv4_data.push_back(json11::Json::object{{"校验和", checksum}});
-        ipv4_data.push_back(json11::Json::object{{"源IP", src_ip_str}});
-        ipv4_data.push_back(json11::Json::object{{"校验和", checksum}});
-        ipv4_data.push_back(json11::Json::object{{"目的IP", dst_ip_str}});
-        analyzer_data.push_back(ipv4_data);
+        analyzer_data.push_back(json11::Json::object{
+            {"协议", "ipv4"},
+            {"ipv4版本", ver},
+            {"ipv4头部长度", header_len},
+            {"服务类型", tos},
+            {"IP优先级", ip_precedence},
+            {"数据报总长度", tot_len},
+            {"是否不分片", dont_fragment},
+            {"后序分片", more_fragment},
+            {"分片偏移", fragment_offset},
+            {"存活时间", ttl},
+            {"下一协议", protocol_name},
+            {"校验和", checksum},
+            {"源IP地址", src_ip_str},
+            {"目的IP地址", dst_ip_str}
+        });
         return;
     }
     else
     {
         status = analyzer_manager::ANALYZER_FAIL;
+        this->fragment[src_mac][dst_mac] = "";
         return;
     }
 }

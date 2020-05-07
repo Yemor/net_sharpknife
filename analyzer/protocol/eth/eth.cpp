@@ -70,12 +70,12 @@ void ETH_Analyzer::DeliverPacket(std::string data, json11::Json::array &analyzer
             /* code */
             SN_Debug("unsupport in eth_analyzer");
         }
-        json11::Json::array eth_data;
-        eth_data.push_back(json11::Json::object{{"协议", "ethernet"}});
-        eth_data.push_back(json11::Json::object{{"源MAC地址", src_mac}});
-        eth_data.push_back(json11::Json::object{{"目的MAC地址", dst_mac}});
-        eth_data.push_back(json11::Json::object{{"下一协议", eth_type == 0x0800 ? "ipv4" : (eth_type == 0x86dd ? "ipv6" : "other")}});
-        analyzer_data.push_back(eth_data);
+        analyzer_data.push_back(json11::Json::object{
+            {"协议", "ethernet"},
+            {"源MAC地址", src_mac},
+            {"目的MAC地址", dst_mac},
+            {"下一协议", eth_type == 0x0800 ? "ipv4" : (eth_type == 0x86dd ? "ipv6" : "other")}
+        });
         return;
     }
     else
