@@ -5,6 +5,7 @@
 #include "sharpknife_common.h"
 #include "./capturer/capturer.h"
 #include "dbconnect/dbconnect_api.h"
+#include "analyzer/analyzer_manager.h"
 #include <iostream>
 
 int main()

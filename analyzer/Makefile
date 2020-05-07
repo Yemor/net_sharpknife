@@ -10,14 +10,16 @@ THIRD_PARTY_SHAREDS = -lpcap -lmysqlcppconn8 -lmysqlcppconn
 THIRD_PARTY_SODIR = ./third_party/
 
 OBJS = \
-		net_interface.o \
-		capture_api.o \
-		capturer.o
+		analyzer_manager.o \
+		analyzer.o \
+		protocol/eth/eth.o \
+		protocol/ipv4/ipv4.o 
 
 HEADER = \
-		capture_api.h \
-		capturer.h \
-		net_interface.h
+		analyzer_manager.h \
+		analyzer.h \
+		protocol/eth/eth.h \
+		protocol/ipv4/ipv4.h 
 
 
 Main : makedir $(OBJS) package
@@ -26,12 +28,12 @@ makedir:
 	-@mkdir -p so
 
 $(OBJS): $(HEADER)
-	@g++ -c $*.cpp $(CXXFLAGS) -o $(SODIR)$*.o
+	@g++ -c $*.cpp $(CXXFLAGS) -o $(SODIR)$(notdir $*).o
 	@echo $*.o
 
 package: makedir
-	g++ ./so/*.o $(CXXFLAGS) -shared -o $(SODIR)libcapturer.so
-	cp $(SODIR)libcapturer.so ../so/
+	g++ ./so/*.o $(CXXFLAGS) -shared -o $(SODIR)libanalyzer.so
+	cp $(SODIR)libanalyzer.so ../so/
 
 clean :
 	-rm -rf ./so/*.o ./so/*.so

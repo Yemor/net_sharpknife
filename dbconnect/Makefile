@@ -23,7 +23,7 @@ makedir:
 	-@mkdir -p so
 
 $(OBJS): $(HEADER)
-	@g++ -c $*.cpp $(CXXFLAGS) -o $(SODIR)$*.o
+	@g++ -c $*.cpp $(CXXFLAGS) -o $(SODIR)$(notdir $*).o
 	@echo $*.o
 
 package: makedir

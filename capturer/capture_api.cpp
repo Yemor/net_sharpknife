@@ -1,5 +1,7 @@
 #include "capture_api.h"
 #include "capturer.h"
+#include "../analyzer/analyzer_manager.h"
+#include "../dbconnect/dbconnect_api.h"
 
 int get_alldevs(std::vector<NetInterface> &alldevs_vec, char *errbuf)
 {
@@ -34,11 +36,11 @@ void show_alldevs(std::vector<NetInterface> &alldevs_vec)
 {
     for (int i = 0; i < alldevs_vec.size(); i++)
     {
-        SN_Debug("   dev %d : dev_name = %s, dev_descript = %s, dev_flags = %d", 
-                            i+1,
-                            alldevs_vec[i].dev_name().c_str(), 
-                            alldevs_vec[i].dev_descript().c_str(), 
-                            alldevs_vec[i].dev_flag());
+        SN_Debug("   dev %d : dev_name = %s, dev_descript = %s, dev_flags = %d",
+                 i + 1,
+                 alldevs_vec[i].dev_name().c_str(),
+                 alldevs_vec[i].dev_descript().c_str(),
+                 alldevs_vec[i].dev_flag());
     }
 }
 
@@ -59,9 +61,10 @@ void recall_db(std::string bytes)
  */
 void recall_analyzer(std::string bytes)
 {
-
+    using namespace analyzer_manager;
+    static Analyzer_Manager am = Analyzer_Manager();
+    am.DeliverStream(bytes);
 }
-
 
 /**
  * @brief 抓包回调
@@ -88,8 +91,9 @@ void deliver_packet(u_char *user, const struct pcap_pkthdr *h, const u_char *byt
         total_vec.insert(total_vec.end(), vec.begin(), vec.end());
     }
     SN_Debug("\n");
-    recall_db(std::string(total_vec.begin(), total_vec.end()));
-    recall_analyzer(std::string(total_vec.begin(), total_vec.end()));
+    // debug pause recall_db
+    // recall_db(std::string(total_vec.begin(), total_vec.end()));
+    recall_analyzer(std::string(bytes, bytes + h->caplen));
     return;
 }
 
@@ -116,7 +120,7 @@ int interface_live(int snaplen, int promisc, int timeout, std::string device_nam
     int dispatch_status = 0;
     // u_char user[100] = "ymr";
     pcap_handler a = deliver_packet;
-    for (int i = 1; i <= 100 && dispatch_status != -1; i++)
+    for (int i = 1; i <= 5 && dispatch_status != -1; i++)
     {
         SN_Debug("pcap %d:", i);
         dispatch_status = pcap_dispatch(device, 1, a, NULL);
