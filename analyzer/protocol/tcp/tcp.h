@@ -9,6 +9,11 @@ namespace analyzer
 namespace tcp
 {
 
+enum{
+    HTTP=80,
+    
+};
+
 class TCP_Analyzer : public analyzer::Analyzer
 {
 public:
